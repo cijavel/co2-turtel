@@ -8,7 +8,7 @@
 #include <SPI.h>
 #include <FastLED.h>
 #include "sectionLed.h"
-
+#include <Preferences.h>
 
 class FastLedHandler{
 public:

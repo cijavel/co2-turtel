@@ -2,6 +2,8 @@
 #include "FastLedHandler.h"
 #include "sectionLed.h"
 
+extern Preferences preferences;
+
 CRGB leds[NUM_LEDS];
 
 // Map section names to their corresponding sections
@@ -29,9 +31,13 @@ void FastLedHandler::setup_led()
     FastLED.setMaxPowerInVoltsAndMilliamps( 5, MAX_POWER_MILLIAMPS);
     FastLED.setBrightness(BRIGHTNESS_LEDS);
 
-    #ifdef DEBUG
-            Serial.println("[FASTLED] Set LED configuration");
-    #endif
+    preferences.begin("config", true);
+        bool switchDebug = preferences.getBool("switchWIFI", DEBUG);
+    preferences.end();
+
+    if (switchDebug) {
+        Serial.println("[FASTLED] Set LED configuration");
+    } 
 }
 
 void FastLedHandler::setInputDataforLED(DataCO2 co2Sensordata, Bsec enviromentdata)
@@ -65,9 +71,14 @@ void FastLedHandler::ledStatusWiFi()
     {
         setSectionColor(LED_WLANCONNECT, CRGB::LightSkyBlue);
     }
-    #ifdef DEBUG
-            Serial.println("[FASTLED] before show WIFI");
-    #endif
+
+    preferences.begin("config", true);
+        bool switchDebug = preferences.getBool("switchWIFI", DEBUG);
+    preferences.end();
+
+    if (switchDebug) {
+        Serial.println("[FASTLED] before show WIFI");
+    } 
 }
 
 void FastLedHandler::ledStatusBME()
@@ -201,14 +212,20 @@ void FastLedHandler::ledStatusBME()
             delay(500);
         }
     }
-    #ifdef DEBUG
-            Serial.print("[FASTLED] temperature: ");
+   
+   
+    preferences.begin("config", true);
+        bool switchDebug = preferences.getBool("switchWIFI", DEBUG);
+    preferences.end();
+
+    if (switchDebug) {
+        Serial.print("[FASTLED] temperature: ");
             Serial.println(String(bmedata.temperature));
             Serial.print("[FASTLED] humidity: ");
             Serial.println(String(bmedata.humidity));
             Serial.print("[FASTLED] pressure: ");
             Serial.println(String(bmedata.pressure/100));
-    #endif
+    } 
 }
 
 void FastLedHandler::ledStatusCO2()
@@ -251,11 +268,15 @@ void FastLedHandler::ledStatusCO2()
             setSectionColor(LED_CO2, CRGB::Magenta);
             delay(150);
         }
-    }
-    #ifdef DEBUG
-            Serial.print("[FASTLED] co2data: ");
-            Serial.println(String(co2data.getRegular()));
-    #endif
+    }    
+    preferences.begin("config", true);
+        bool switchDebug = preferences.getBool("switchWIFI", DEBUG);
+    preferences.end();
+
+    if (switchDebug) {
+        Serial.print("[FASTLED] co2data: ");
+        Serial.println(String(co2data.getRegular()));
+    } 
 }
 
 bool FastLedHandler::setup_black(const unsigned long currentSeconds)
@@ -266,8 +287,15 @@ bool FastLedHandler::setup_black(const unsigned long currentSeconds)
         FastLED.clear(true);
         FastLED.setBrightness(BRIGHTNESS_LEDS);
         FastLED.setCorrection( TypicalLEDStrip );
-        FastLED.setMaxPowerInVoltsAndMilliamps( 5, MAX_POWER_MILLIAMPS);       
-        Serial.println("[FASTLED] Set LED configuration to black");
+        FastLED.setMaxPowerInVoltsAndMilliamps( 5, MAX_POWER_MILLIAMPS);   
+
+        preferences.begin("config", true);
+            bool switchDebug = preferences.getBool("switchWIFI", DEBUG);
+        preferences.end();
+
+        if (switchDebug) {
+            Serial.println("[FASTLED] Set LED configuration to black");
+        }    
         return true;
     }
     return false;

@@ -12,11 +12,14 @@
 
 #include "../Font/Inter_Bold12pt7b.h"
 #include "../Font/Inter_Bold10pt7b.h"
-
+#include <Preferences.h>
+extern Preferences preferences;
 #include "Configuration.h"
 #include "symbol.h" // own symbol
 
 #define EPDPrintFormatBufferSize 5
+
+
 
 void EPDHandler::printVertically(const DataCO2 co2, const Bsec bme_data, const String& epd_date, const String& epd_time) {
     display.init(BAUDRATE);

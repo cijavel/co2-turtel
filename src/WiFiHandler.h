@@ -1,5 +1,6 @@
 #ifndef CO2_TURTLE_WIFIHANDLER_H
 #define CO2_TURTLE_WIFIHANDLER_H
+#include <Preferences.h>
 
 class WiFiHandler{
 public:

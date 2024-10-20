@@ -5,6 +5,8 @@
 #include "Arduino.h"
 #include "Configuration.h"
 #include "DataCO2.h"
+#include <Preferences.h>
+
 
 class MHZ19Handler {
 public:

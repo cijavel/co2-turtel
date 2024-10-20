@@ -4,7 +4,7 @@
 #include <AsyncMqttClient.h>
 #include "WiFiHandler.h"
 #include <WiFi.h>
-
+#include <Preferences.h>
 #include "DataCO2.h"
 #include "bsec.h"
 

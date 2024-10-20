@@ -5,9 +5,6 @@ const char *html_settings = R"rawliteral(
                 <th><label for="switchWIFI">WiFi Check</label></th>
                 <td><input type="checkbox" id="switchWIFI" name="switchWIFI" {{switchWIFI_checked}}></td>
             </tr><tr>
-                <th><label for="switchWEB">Webserver</label></th>
-                <td><input type="checkbox" id="switchWEB" name="switchWEB" {{switchWEB_checked}}></td>
-            </tr><tr>
                 <th><label for="switchPRINT">RAM Printout</label></th>
                 <td><input type="checkbox" id="switchPRINT" name="switchPRINT" {{switchPRINT_checked}}></td>
             </tr><tr>
@@ -56,6 +53,10 @@ const char *html_settings = R"rawliteral(
     <!-- Reset Button -->
     <form action="/reset" method="POST">
         <button type="submit">Reset ESP32</button>
+    </form>
+    <!-- Reset Button -->
+    <form action="/load_defaults" method="POST">
+        <button onclick="loadDefaults()">Load Default Settings</button>
     </form>
 
 )rawliteral";

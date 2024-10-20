@@ -40,6 +40,7 @@
 #include "BME680Handler.h"
 #include "MHZ19Handler.h"
 #include "Configuration.h"
+#include "Credentials.h"
 #include "WiFiHandler.h"
 #include "bsec.h"
 #include <ctime>
@@ -47,10 +48,9 @@
 #include "WebServerHandler.h"
 #include "FastLedHandler.h"
 #include "MqttClientHandler.h"
-
-//#include "MqttClientHandler.h"
-
-
+#include "SettingsHandler.h"
+#include <Preferences.h>
+Preferences preferences;
 
 // --------------------------------------------------------------------------
 // time functions
@@ -77,120 +77,123 @@ String localTime(const String& format) {
 }
 
 
-#ifdef DEBUG
+
 static void PrintRamUsage(unsigned long currentSeconds) {
-    if (currentSeconds % interval_RAMPrintout_in_Seconds == 0) {
-        Serial.print("Memory Usage: ");
-        uint32_t freeHeap = ESP.getFreeHeap();
-        uint32_t maximumHeap = ESP.getHeapSize();
-        uint32_t usedHeap = maximumHeap - freeHeap;
-        Serial.print(usedHeap);
-        Serial.print("b | ");
-        Serial.print(maximumHeap);
-        Serial.println("b");
-    }
+    preferences.begin("config", true);
+        bool switchDebug = preferences.getBool("switchWIFI", DEBUG);
+    preferences.end();
+
+    if (switchDebug) {
+        if (currentSeconds % interval_RAMPrintout_in_Seconds == 0) {
+            Serial.print("Memory Usage: ");
+            uint32_t freeHeap = ESP.getFreeHeap();
+            uint32_t maximumHeap = ESP.getHeapSize();
+            uint32_t usedHeap = maximumHeap - freeHeap;
+            Serial.print(usedHeap);
+            Serial.print("b | ");
+            Serial.print(maximumHeap);
+            Serial.println("b");
+        }
+    } 
 }
-#endif
+
 
 void setup() {
     delay(100);
     Serial.begin(BAUDRATE);
     Serial.println();
+    SettingsHandler &settingsHandler = SettingsHandler::getInstance();
+    settingsHandler.setSeetingsOnFirstRun();
+
+    
+    preferences.begin("config", true);
+        bool switchLED = preferences.getBool("switchLED", switch_LED);
+        bool switchmqtt = preferences.getBool("switchMQTT", switch_MQTT);
+    preferences.end();
+   
     WiFiHandler::initWifi();
     configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
     WebServerHandler &webServer = WebServerHandler::getInstance();
     webServer.start();
 
-    
-
-    #ifdef switch_LED
+    if (switchLED) {
         FastLedHandler &ledhandler = FastLedHandler::getInstance();
         ledhandler.setup_led();
-    #endif
+    }
 
-    #ifdef switch_mqtt
+    if (switchLED) {
         MqttClientHandler &MqttHandler = MqttClientHandler::getInstance();
         MqttHandler.setup_Mqtt();
-    #endif
-    
-
+    }
 }
-
-
 
 unsigned long last = 0;
 void loop() {
-    unsigned long currentSeconds = millis() / 1000;
-#ifdef DEBUG
-    if (currentSeconds != last) {
-        Serial.print("loop second: ");
-        Serial.println(currentSeconds);
-        last = currentSeconds;
-    }
-#endif
-
-
-
-
-BME680Handler &bmehandler = BME680Handler::getInstance();
-Bsec bme_data = bmehandler.getData();
-
-#ifdef DEBUG
-    if (bmehandler.updateSensorData(currentSeconds)) {
-        bmehandler.printout();
-    }
-#else
-    bmehandler.updateSensorData(currentSeconds);
-#endif
-
-
-
-MHZ19Handler &mhz19Handler = MHZ19Handler::getInstance();
-#ifdef DEBUG
-    if (mhz19Handler.runUpdate(currentSeconds)) {
-        mhz19Handler.printoutLastReadout();
-    }
-#else
-    mhz19Handler.runUpdate(currentSeconds);
-#endif
-DataCO2 mhz19Readout = mhz19Handler.getLastReadout();
-
-
-#ifdef switch_WiFiCheck
-        WiFiHandler::checkWifi(currentSeconds);
-#endif
+    preferences.begin("config", true);
+        bool switchRAMPrintout = preferences.getBool("switchPRINT", switch_PRINT);
+        bool switchEPD = preferences.getBool("switchEPD", switch_EPD);
+        bool switchLED = preferences.getBool("switchLED", switch_LED);
+        bool switchmqtt = preferences.getBool("switchMQTT", switch_MQTT);
+        bool switchWifi = preferences.getBool("switchWIFI", switch_WIFI);
+        bool switchDebug = preferences.getBool("switchWIFI", DEBUG);
+    preferences.end();
    
 
-#ifdef switch_Webserver
-        WebServerHandler &webServer = WebServerHandler::getInstance();
-        webServer.setInputDataforBody(mhz19Readout, bme_data, localTime("%Y.%m.%d %H:%M:%S"));   
-#endif
+    unsigned long currentSeconds = millis() / 1000;
+    if (switchDebug) {
+        if (currentSeconds != last) {
+            Serial.print("loop second: ");
+            Serial.println(currentSeconds);
+            last = currentSeconds;
+        }
+    } 
+
+    BME680Handler &bmehandler = BME680Handler::getInstance();
+    Bsec bme_data = bmehandler.getData();
+    if (switchDebug) {
+        if (bmehandler.updateSensorData(currentSeconds)) {
+            bmehandler.printout();
+        }
+    } else {
+        bmehandler.updateSensorData(currentSeconds);
+    }
+
+    MHZ19Handler &mhz19Handler = MHZ19Handler::getInstance();
+    if (switchDebug) {
+        if (mhz19Handler.runUpdate(currentSeconds)) {
+            mhz19Handler.printoutLastReadout();
+        }
+    } else {
+        mhz19Handler.runUpdate(currentSeconds);
+    }
     
+    DataCO2 mhz19Readout = mhz19Handler.getLastReadout();
 
-#ifdef switch_EPD
+    if (switchWifi) {
+        WiFiHandler::checkWifi(currentSeconds);
+    } 
+    
+    WebServerHandler &webServer = WebServerHandler::getInstance();
+    webServer.setInputDataforBody(mhz19Readout, bme_data, localTime("%Y.%m.%d %H:%M:%S"));   
+
+    if (switchEPD) {
         EPDHandler::updateEPDvertical(mhz19Readout, bme_data, localTime("%Y.%m.%d"), localTime("%H:%M"), currentSeconds);
-#endif
-
-
-#ifdef switch_LED
+    } 
+        
+    if (switchLED) {
         FastLedHandler &ledHandler = FastLedHandler::getInstance();
         ledHandler.setInputDataforLED(mhz19Readout, bme_data);
         ledHandler.ledstatus(currentSeconds);
-#else
+    } else {
         FastLedHandler &ledHandler = FastLedHandler::getInstance();
         ledHandler.setup_black(currentSeconds);
-#endif
-    
+    }
 
-#ifdef switch_mqtt
+    if (switchmqtt) {
         MqttClientHandler &MqttHandler = MqttClientHandler::getInstance();
         MqttHandler.publishData(mhz19Readout, bme_data, currentSeconds);
-#endif
-    
-
-    
-
-#ifdef DEBUG
-    PrintRamUsage(currentSeconds);
-#endif
+    } 
+    if (switchDebug) {
+        PrintRamUsage(currentSeconds);
+    } 
 }

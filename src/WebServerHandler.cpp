@@ -1,8 +1,10 @@
 #include "WebServerHandler.h"
 #include "Configuration.h"
 #include "Credentials.h"
-#include <Preferences.h>
+#include "settingsHandler.h"
+
 extern Preferences preferences;
+SettingsHandler settingsHandler;
 
 #include "../html/index.h"
 #include "../html/settings.h"
@@ -22,6 +24,7 @@ WebServerHandler::WebServerHandler()
   server.on("/submitsetting", HTTP_POST, std::bind(&WebServerHandler::handle_setting_submit, this, std::placeholders::_1));
   server.on("/submitswitch", HTTP_POST, std::bind(&WebServerHandler::handle_switch_submit, this, std::placeholders::_1));
   server.on("/reset", HTTP_POST, std::bind(&WebServerHandler::handle_reset, this, std::placeholders::_1));
+  server.on("/load_defaults", HTTP_POST, std::bind(&WebServerHandler::handle_load_defaults, this, std::placeholders::_1));
   server.onNotFound(handle_NotFound);
 }
 
@@ -105,7 +108,7 @@ void WebServerHandler::handle_wlan(AsyncWebServerRequest *request)
 {
   String password;
   String ssid;
-  preferences.begin("wifi", true);
+  preferences.begin("config", true);
   ssid = preferences.getString("wlanSSID", WIFI_SSID);
   password = preferences.getString("wlanPASSWORD", WIFI_PW);
   preferences.end();
@@ -372,7 +375,6 @@ void WebServerHandler::handle_setting(AsyncWebServerRequest *request)
   // Load current settings from preferences
   preferences.begin("config", true);
   bool switchWiFiCheck = preferences.getBool("switchWIFI", switch_WIFI);
-  bool switchWebserver = preferences.getBool("switchWEB", switch_WEB);
   bool switchRAMPrintout = preferences.getBool("switchPRINT", switch_PRINT);
   bool switchEPD = preferences.getBool("switchEPD", switch_EPD);
   bool switchLED = preferences.getBool("switchLED", switch_LED);
@@ -388,7 +390,6 @@ void WebServerHandler::handle_setting(AsyncWebServerRequest *request)
   preferences.end();
 
   content.replace("{{switchWIFI_checked}}", switchWiFiCheck ? "checked" : "");
-  content.replace("{{switchWEB_checked}}", switchWebserver ? "checked" : "");
   content.replace("{{switchPRINT_checked}}", switchRAMPrintout ? "checked" : "");
   content.replace("{{switchEPD_checked}}", switchEPD ? "checked" : "");
   content.replace("{{switchLED_checked}}", switchLED ? "checked" : "");
@@ -408,7 +409,7 @@ void WebServerHandler::handle_setting(AsyncWebServerRequest *request)
 
 void WebServerHandler::handle_credentials_submit(AsyncWebServerRequest *request)
 {
-  preferences.begin("wifi", false); // Open preferences in read-write mode
+  preferences.begin("config", false); // Open preferences in read-write mode
   preferences.putString("wlanSSID",  request->getParam("wlanSSID", true)->value());
   preferences.putString("wlanPASSWORD",request->getParam("wlanPASSWORD", true)->value());
   preferences.end();
@@ -427,19 +428,20 @@ void WebServerHandler::handle_setting_submit(AsyncWebServerRequest *request)
   preferences.putInt("intervalLED", request->getParam("intervalLED", interval_LED_in_Seconds)->value().toInt());
   preferences.putInt("intervalMQTT", request->getParam("intervalMQTT", interval_mqtt_in_Seconds)->value().toInt());
   preferences.end();
+  request->redirect("/");
 }
 
 void WebServerHandler::handle_switch_submit(AsyncWebServerRequest *request)
 {
   // Save the submitted values back to preferences
   preferences.begin("config", false);
-  preferences.putBool("switchWIFI", request->hasParam("switchWIFI", switch_WIFI));
-  preferences.putBool("switchWEB", request->hasParam("switchWEB", switch_WEB));
-  preferences.putBool("switchPRINT", request->hasParam("switchPRINT", switch_PRINT));
-  preferences.putBool("switchEPD", request->hasParam("switchEPD", switch_EPD));
-  preferences.putBool("switchLED", request->hasParam("switchLED", switch_LED));
-  preferences.putBool("switchMQTT", request->hasParam("switchMQTT", switch_MQTT));
+  preferences.putBool("switchWIFI", request->hasParam("switchWIFI"));
+  preferences.putBool("switchPRINT", request->hasParam("switchPRINT"));
+  preferences.putBool("switchEPD", request->hasParam("switchEPD"));
+  preferences.putBool("switchLED", request->hasParam("switchLED"));
+  preferences.putBool("switchMQTT", request->hasParam("switchMQTT"));
   preferences.end();
+  request->redirect("/");
 }
 
 void WebServerHandler::handle_reset(AsyncWebServerRequest *request)
@@ -447,6 +449,13 @@ void WebServerHandler::handle_reset(AsyncWebServerRequest *request)
   request->send(200, "text/html", "Device is resetting...");
   delay(500);    // Allow time for the response to be sent
   ESP.restart(); // Reset the ESP32
+}
+void WebServerHandler::handle_load_defaults(AsyncWebServerRequest *request)
+{
+  settingsHandler.reset();  // Load default settings
+  request->send(200, "text/plain", "Defaults loaded");
+  delay(500);  // Short delay before restart
+  ESP.restart();  // Restart the ESP32 to apply default settings
 }
 
 void WebServerHandler::handle_NotFound(AsyncWebServerRequest *request)

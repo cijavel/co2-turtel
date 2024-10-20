@@ -6,6 +6,7 @@
 #include "bsec.h"
 #include "FS.h"
 #include "LittleFS.h"
+#include <Preferences.h>
 
 class WebServerHandler {
 public:
@@ -29,6 +30,7 @@ private:
     void handle_switch_submit(AsyncWebServerRequest *request);
     void handle_credentials_submit(AsyncWebServerRequest *request);
     void handle_reset(AsyncWebServerRequest *request);
+    void handle_load_defaults(AsyncWebServerRequest *request);
     static void handle_NotFound(AsyncWebServerRequest *request);
     WebServerHandler();                    // Constructor? (the {} brackets) are needed here.
     WebServerHandler(WebServerHandler const&);  // Don't Implement

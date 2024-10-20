@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 #include "bsec.h"
-
+#include <Preferences.h>
 
 class BME680Handler {
 public:
