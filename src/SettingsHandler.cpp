@@ -10,6 +10,7 @@ void SettingsHandler::loadDefaultSettings() {
         preferences.putBool("switchEPD", switch_EPD);
         preferences.putBool("switchLED", switch_LED);
         preferences.putBool("switchMQTT", switch_MQTT);
+        preferences.putBool("switchDEBUG", DEBUG);
 
         preferences.putInt("intervalMHZ19", interval_MHZ19_in_Seconds);
         preferences.putInt("intervalBME680", interval_BME680_in_Seconds);
@@ -22,7 +23,6 @@ void SettingsHandler::loadDefaultSettings() {
         preferences.putString("device", DeviceName);
         preferences.putString("timezone", TIMEZONE);
         preferences.putInt("amountLED", NUM_LEDS);
-        preferences.putInt("debugMsg", DEBUG);
 
         preferences.putString("wlanSSID", WIFI_SSID);
         preferences.putString("wlanPASSWORD", WIFI_PW);

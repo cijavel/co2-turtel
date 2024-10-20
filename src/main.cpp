@@ -80,7 +80,7 @@ String localTime(const String& format) {
 
 static void PrintRamUsage(unsigned long currentSeconds) {
     preferences.begin("config", true);
-        bool switchDebug = preferences.getBool("switchWIFI", DEBUG);
+        bool switchDebug = preferences.getBool("switchDEBUG", DEBUG);
     preferences.end();
 
     if (switchDebug) {
@@ -130,17 +130,16 @@ void setup() {
 unsigned long last = 0;
 void loop() {
     preferences.begin("config", true);
-        bool switchRAMPrintout = preferences.getBool("switchPRINT", switch_PRINT);
+        bool switchPrint = preferences.getBool("switchPRINT", switch_PRINT);
         bool switchEPD = preferences.getBool("switchEPD", switch_EPD);
         bool switchLED = preferences.getBool("switchLED", switch_LED);
-        bool switchmqtt = preferences.getBool("switchMQTT", switch_MQTT);
-        bool switchWifi = preferences.getBool("switchWIFI", switch_WIFI);
-        bool switchDebug = preferences.getBool("switchWIFI", DEBUG);
+        bool switchMQTT = preferences.getBool("switchMQTT", switch_MQTT);
+        bool switchWiFi = preferences.getBool("switchWIFI", switch_WIFI);
+        bool switchDEBUG = preferences.getBool("switchDEBUG", DEBUG);
     preferences.end();
-   
 
     unsigned long currentSeconds = millis() / 1000;
-    if (switchDebug) {
+    if (switchDEBUG) {
         if (currentSeconds != last) {
             Serial.print("loop second: ");
             Serial.println(currentSeconds);
@@ -150,7 +149,7 @@ void loop() {
 
     BME680Handler &bmehandler = BME680Handler::getInstance();
     Bsec bme_data = bmehandler.getData();
-    if (switchDebug) {
+    if (switchDEBUG) {
         if (bmehandler.updateSensorData(currentSeconds)) {
             bmehandler.printout();
         }
@@ -159,7 +158,7 @@ void loop() {
     }
 
     MHZ19Handler &mhz19Handler = MHZ19Handler::getInstance();
-    if (switchDebug) {
+    if (switchDEBUG) {
         if (mhz19Handler.runUpdate(currentSeconds)) {
             mhz19Handler.printoutLastReadout();
         }
@@ -169,7 +168,7 @@ void loop() {
     
     DataCO2 mhz19Readout = mhz19Handler.getLastReadout();
 
-    if (switchWifi) {
+    if (switchWiFi) {
         WiFiHandler::checkWifi(currentSeconds);
     } 
     
@@ -189,11 +188,11 @@ void loop() {
         ledHandler.setup_black(currentSeconds);
     }
 
-    if (switchmqtt) {
+    if (switchMQTT) {
         MqttClientHandler &MqttHandler = MqttClientHandler::getInstance();
         MqttHandler.publishData(mhz19Readout, bme_data, currentSeconds);
     } 
-    if (switchDebug) {
+    if (switchDEBUG) {
         PrintRamUsage(currentSeconds);
     } 
 }

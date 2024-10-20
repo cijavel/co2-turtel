@@ -51,11 +51,9 @@ void MqttClientHandler::onMqttDisconnect(AsyncMqttClientDisconnectReason reason)
 void MqttClientHandler::setup_Mqtt()
 {
 	WiFi.onEvent(WiFiEvent);
-
 	mqttClient.onDisconnect(onMqttDisconnect);
 	mqttClient.setServer(MQTT_HOST, MQTT_PORT);
 	mqttClient.setCredentials(MQTT_USER, MQTT_PASS);
-	Serial.println("[MQTT] connected");
 }
 
 void MqttClientHandler::publishData(const DataCO2 data_co2, const Bsec data_bme, const unsigned long currentSeconds)
@@ -64,7 +62,7 @@ void MqttClientHandler::publishData(const DataCO2 data_co2, const Bsec data_bme,
 	{
 
 		preferences.begin("config", true);
-			bool switchDebug = preferences.getBool("switchWIFI", DEBUG);
+			bool switchDebug = preferences.getBool("switchDEBUG", DEBUG);
 		preferences.end();
 
 		connectToMqtt();

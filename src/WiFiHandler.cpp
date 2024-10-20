@@ -49,7 +49,7 @@ void WiFiHandler::initWifi()
 	WiFiClass::setHostname(DeviceName);
 
 	preferences.begin("config", true);
-	bool switchDebug = preferences.getBool("switchWIFI", DEBUG);
+	bool switchDebug = preferences.getBool("switchDEBUG", DEBUG);
 	preferences.end();
 
 	if (switchDebug)
@@ -81,7 +81,7 @@ void WiFiHandler::initWifi()
 void WiFiHandler::ReStart()
 {
 	preferences.begin("config", true);
-	bool switchDebug = preferences.getBool("switchWIFI", DEBUG);
+	bool switchDebug = preferences.getBool("switchDEBUG", DEBUG);
 	preferences.end();
 
 	if (switchDebug)
@@ -113,7 +113,7 @@ void WiFiHandler::ReStart()
 bool WiFiHandler::StatusCheck()
 {
 	preferences.begin("config", true);
-	bool switchDebug = preferences.getBool("switchWIFI", DEBUG);
+	bool switchDebug = preferences.getBool("switchDEBUG", DEBUG);
 	preferences.end();
 
 	wl_status_t status = WiFiClass::status();

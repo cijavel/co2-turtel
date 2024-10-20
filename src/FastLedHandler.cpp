@@ -32,7 +32,7 @@ void FastLedHandler::setup_led()
     FastLED.setBrightness(BRIGHTNESS_LEDS);
 
     preferences.begin("config", true);
-        bool switchDebug = preferences.getBool("switchWIFI", DEBUG);
+        bool switchDebug = preferences.getBool("switchDEBUG", DEBUG);
     preferences.end();
 
     if (switchDebug) {
@@ -73,7 +73,7 @@ void FastLedHandler::ledStatusWiFi()
     }
 
     preferences.begin("config", true);
-        bool switchDebug = preferences.getBool("switchWIFI", DEBUG);
+        bool switchDebug = preferences.getBool("switchDEBUG", DEBUG);
     preferences.end();
 
     if (switchDebug) {
@@ -215,7 +215,7 @@ void FastLedHandler::ledStatusBME()
    
    
     preferences.begin("config", true);
-        bool switchDebug = preferences.getBool("switchWIFI", DEBUG);
+        bool switchDebug = preferences.getBool("switchDEBUG", DEBUG);
     preferences.end();
 
     if (switchDebug) {
@@ -290,7 +290,7 @@ bool FastLedHandler::setup_black(const unsigned long currentSeconds)
         FastLED.setMaxPowerInVoltsAndMilliamps( 5, MAX_POWER_MILLIAMPS);   
 
         preferences.begin("config", true);
-            bool switchDebug = preferences.getBool("switchWIFI", DEBUG);
+            bool switchDebug = preferences.getBool("switchDEBUG", DEBUG);
         preferences.end();
 
         if (switchDebug) {

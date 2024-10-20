@@ -24,7 +24,7 @@ MHZ19Handler::MHZ19Handler() {
     myMHZ19.autoCalibration(true);
 
     preferences.begin("config", true);
-        bool switchDebug = preferences.getBool("switchWIFI", DEBUG);
+        bool switchDebug = preferences.getBool("switchDEBUG", DEBUG);
     preferences.end();
 
     if (switchDebug) {
