@@ -4,6 +4,8 @@
 #include "ESPAsyncWebServer.h"
 #include "DataCO2.h"
 #include "bsec.h"
+#include "FS.h"
+#include "LittleFS.h"
 
 class WebServerHandler {
 public:
@@ -21,8 +23,12 @@ private:
     static void handle_index(AsyncWebServerRequest *request);
     void handle_data(AsyncWebServerRequest *request);
     void handle_status(AsyncWebServerRequest *request);
-    void handle_ap(AsyncWebServerRequest *request);
+    void handle_wlan(AsyncWebServerRequest *request);
+    void handle_setting(AsyncWebServerRequest *request);
+    void handle_setting_submit(AsyncWebServerRequest *request);
+    void handle_switch_submit(AsyncWebServerRequest *request);
     void handle_credentials_submit(AsyncWebServerRequest *request);
+    void handle_reset(AsyncWebServerRequest *request);
     static void handle_NotFound(AsyncWebServerRequest *request);
     WebServerHandler();                    // Constructor? (the {} brackets) are needed here.
     WebServerHandler(WebServerHandler const&);  // Don't Implement
