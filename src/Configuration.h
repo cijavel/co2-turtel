@@ -5,12 +5,12 @@
 //#define DEBUG 1
 
 //uncomment to switch off
-#define switch_WiFiCheck 1
-#define switch_Webserver 1
-//#define switch_RAMPrintout 1
-#define switch_EPD 1
-#define switch_LED 1
-//#define switch_mqtt 1
+#define switch_WIFI true
+#define switch_WEB true
+#define switch_PRINT false
+#define switch_EPD true
+#define switch_LED true
+#define switch_MQTT false
 
 #define interval_MHZ19_in_Seconds 30
 #define interval_BME680_in_Seconds 30
