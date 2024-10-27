@@ -391,12 +391,12 @@ void WebServerHandler::handle_setting(AsyncWebServerRequest *request)
 	preferences.end();
 
 	Serial.println("Current read from config Switch Settings:");
-    Serial.printf("WiFi: %s\n", switchWiFiCheck ? "ON" : "OFF");
-    Serial.printf("Print: %s\n", switchRAMPrintout ? "ON" : "OFF");
-    Serial.printf("EPD: %s\n", switchEPD ? "ON" : "OFF");
-    Serial.printf("LED: %s\n", switchLED ? "ON" : "OFF");
-    Serial.printf("MQTT: %s\n", switchmqtt ? "ON" : "OFF");
-    Serial.printf("DEBUG: %s\n", switchdebug ? "ON" : "OFF");
+	Serial.printf("WiFi: %s\n", switchWiFiCheck ? "ON" : "OFF");
+	Serial.printf("Print: %s\n", switchRAMPrintout ? "ON" : "OFF");
+	Serial.printf("EPD: %s\n", switchEPD ? "ON" : "OFF");
+	Serial.printf("LED: %s\n", switchLED ? "ON" : "OFF");
+	Serial.printf("MQTT: %s\n", switchmqtt ? "ON" : "OFF");
+	Serial.printf("DEBUG: %s\n", switchdebug ? "ON" : "OFF");
 
 	content.replace("{{switchWIFI_checked}}", switchWiFiCheck ? "checked" : "");
 	content.replace("{{switchPRINT_checked}}", switchRAMPrintout ? "checked" : "");
@@ -501,15 +501,28 @@ void WebServerHandler::handle_setting_submit(AsyncWebServerRequest *request)
 void WebServerHandler::handle_switch_submit(AsyncWebServerRequest *request)
 {
 	preferences.begin("config", false);
-    preferences.putBool("switchWIFI", request->hasParam("switchWIFI") && request->getParam("switchWIFI")->value() == "on");
-	preferences.putBool("switchPRINT", request->hasParam("switchPRINT") && request->getParam("switchPRINT")->value() == "on");
-	preferences.putBool("switchEPD", request->hasParam("switchEPD") && request->getParam("switchEPD")->value() == "on");
-	preferences.putBool("switchLED", request->hasParam("switchLED") && request->getParam("switchLED")->value() == "on");
-	preferences.putBool("switchMQTT", request->hasParam("switchMQTT") && request->getParam("switchMQTT")->value() == "on");
-	preferences.putBool("switchDEBUG", request->hasParam("switchDEBUG") && request->getParam("switchDEBUG")->value() == "on");
 
+
+		request->getParam("switchWIFI")->value();
+
+		bool switchWIFIValue = request->hasParam("switchWIFI") && request->getParam("switchWIFI")->value() == "on";
+		preferences.putBool("switchWIFI", switchWIFIValue);
+
+		bool switchPRINTValue = request->hasParam("switchPRINT") && request->getParam("switchPRINT")->value() == "on";
+		preferences.putBool("switchPRINT", switchPRINTValue);
+
+		bool switchEPDValue = request->hasParam("switchEPD") && request->getParam("switchEPD")->value() == "on";
+		preferences.putBool("switchEPD", switchEPDValue);
+
+		bool switchLEDValue = request->hasParam("switchLED") && request->getParam("switchLED")->value() == "on";
+		preferences.putBool("switchLED", switchLEDValue);
+
+		bool switchMQTTValue = request->hasParam("switchMQTT") && request->getParam("switchMQTT")->value() == "on";
+		preferences.putBool("switchMQTT", switchMQTTValue);
+
+		bool switchDEBUGValue = request->hasParam("switchDEBUG") && request->getParam("switchDEBUG")->value() == "on";
+		preferences.putBool("switchDEBUG", switchDEBUGValue);
 	preferences.end();
-	request->send(200, "text/plain", "Switch Settings Saved!");
 	request->redirect("/");
 }
 
@@ -523,9 +536,10 @@ void WebServerHandler::handle_reset(AsyncWebServerRequest *request)
 void WebServerHandler::handle_load_defaults(AsyncWebServerRequest *request)
 {
 	settingsHandler.reset(); // Load default settings
+	request->redirect("/");
 	request->send(200, "text/plain", "Defaults loaded");
 	delay(500);
-	ESP.restart(); 
+	ESP.restart();
 }
 
 void WebServerHandler::handle_NotFound(AsyncWebServerRequest *request)

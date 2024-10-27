@@ -270,7 +270,7 @@ void FastLedHandler::ledStatusCO2()
         }
     }    
     preferences.begin("config", true);
-        bool switchDebug = preferences.getBool("switchWIFI", DEBUG);
+        bool switchDebug = preferences.getBool("switchDEBUG", DEBUG);
     preferences.end();
 
     if (switchDebug) {

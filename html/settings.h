@@ -3,19 +3,39 @@ const char *html_settings = R"rawliteral(
         <table class="content">
             <tr>
                 <th><label for="switchWIFI">WiFi Check</label></th>
-                <td><input type="checkbox" id="switchWIFI" name="switchWIFI" {{switchWIFI_checked}}></td>
-            </tr><tr>
+                <td>
+                    <input type="checkbox" id="switchWIFI" name="switchWIFI" value="on" {{switchWIFI_checked}}  title="Check WLAN status">
+                </td>
+            </tr>
+            <tr>
                 <th><label for="switchPRINT">RAM Printout</label></th>
-                <td><input type="checkbox" id="switchPRINT" name="switchPRINT" {{switchPRINT_checked}}></td>
-            </tr><tr>
+                <td>
+                    <input type="checkbox" id="switchPRINT" name="switchPRINT" value="on" {{switchPRINT_checked}} title="Display RAM on console">
+                </td>
+            </tr>
+            <tr>
                 <th><label for="switchEPD">EPD Display</label></th>
-                <td><input type="checkbox" id="switchEPD" name="switchEPD" {{switchEPD_checked}}></td>
-            </tr><tr>
+                <td>
+                    <input type="checkbox" id="switchEPD" name="switchEPD" value="on" {{switchEPD_checked}} title="Display sensor data on EPD">
+                </td>
+            </tr>
+            <tr>
                 <th><label for="switchLED">LED</label></th>
-                <td><input type="checkbox" id="switchLED" name="switchLED" {{switchLED_checked}}></td>
-            </tr><tr>
+                <td>
+                    <input type="checkbox" id="switchLED" name="switchLED" value="on" {{switchLED_checked}} title="Display sensor data on LED strips">
+                </td>
+            </tr>
+            <tr>
                 <th><label for="switchMQTT">MQTT</label></th>
-                <td><input type="checkbox" id="switchMQTT" name="switchMQTT" {{switchMQTT_checked}}></td>
+                <td>
+                    <input type="checkbox" id="switchMQTT" name="switchMQTT" value="on" {{switchMQTT_checked}} title="Send sensor data via MQTT">
+                </td>
+            </tr>
+            <tr>
+                <th><label for="switchDEBUG">Debug message</label></th>
+                <td>
+                    <input type="checkbox" id="switchDEBUG" name="switchDEBUG" value="on" {{switchDEBUG_checked}} title="Display debug messages in console">
+                </td>
             </tr>
         </table>
         <input type="submit" value="Save Settings">
@@ -25,7 +45,7 @@ const char *html_settings = R"rawliteral(
             <table class="content">
             <tr>
                 <th><label for="intervalMHZ19"19>MHZ19 Interval (s)</label></th>
-                <td><input type="number" id="intervalMHZ19"19 name="intervalMHZ19"19 value="{{interval_MHZ19_in_Seconds}}"></td>
+                <td><input type="number" id="intervalMHZ19" name="intervalMHZ19" value="{{interval_MHZ19_in_Seconds}}"></td>
             </tr><tr>
                 <th><label for="intervalBME680">BME680 Interval (s)</label></th>
                 <td><input type="number" id="intervalBME680" name="intervalBME680" value="{{interval_BME680_in_Seconds}}"></td>
