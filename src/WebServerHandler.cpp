@@ -322,7 +322,7 @@ void WebServerHandler::handle_status(AsyncWebServerRequest *request)
 	{
 		if (co2data.getRegular() < 600) // outdoor air
 		{
-			content.replace("{]descr_MHZ19B_co2}}", "outdoor air");
+			content.replace("{{descr_MHZ19B_co2}}", "outdoor air");
 			content.replace("{{color_MHZ19B_co2}}", "0000ff"); // Blue
 		}
 		else if (co2data.getRegular() < 800) // fresh indoor air

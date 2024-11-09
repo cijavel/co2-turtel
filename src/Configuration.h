@@ -25,7 +25,7 @@
 #define PIN_MHZ19_TX 16
 #define BAUDRATE 9600
 
-#define DeviceName "Sensorturtle_3 15.10.2024"
+#define DeviceName "Tortois 4 08.11.24"
 #define TIMEZONE "CET-1CEST,M3.5.0,M10.5.0/3"
 
 #define SEALEVELPRESSURE_HPA 1015
