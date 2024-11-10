@@ -15,20 +15,20 @@ extern Preferences preferences;
 
 WebServerHandler::WebServerHandler()
 {
-	server.on("/", HTTP_GET, handle_index);
-	server.on("/json", HTTP_GET, std::bind(&WebServerHandler::handle_data, this, std::placeholders::_1));
-	server.on("/status", HTTP_GET, std::bind(&WebServerHandler::handle_status, this, std::placeholders::_1));
-	server.on("/WLAN", HTTP_GET, std::bind(&WebServerHandler::handle_wlan, this, std::placeholders::_1));
-	server.on("/settings", HTTP_GET, std::bind(&WebServerHandler::handle_setting, this, std::placeholders::_1));
-	server.on("/submit", HTTP_POST, std::bind(&WebServerHandler::handle_credentials_submit, this, std::placeholders::_1));
-	server.on("/submitsetting", HTTP_POST, std::bind(&WebServerHandler::handle_setting_submit, this, std::placeholders::_1));
-	server.on("/submitswitch", HTTP_POST, std::bind(&WebServerHandler::handle_switch_submit, this, std::placeholders::_1));
+	server.on("/", HTTP_GET, handle_page_index);
+	server.on("/json", HTTP_GET, std::bind(&WebServerHandler::handle_page_data, this, std::placeholders::_1));
+	server.on("/status", HTTP_GET, std::bind(&WebServerHandler::handle_page_status, this, std::placeholders::_1));
+	server.on("/WLAN", HTTP_GET, std::bind(&WebServerHandler::handle_page_wlan, this, std::placeholders::_1));
+	server.on("/settings", HTTP_GET, std::bind(&WebServerHandler::handle_page_setting, this, std::placeholders::_1));
+	server.on("/submit", HTTP_POST, std::bind(&WebServerHandler::handle_submit_credentials, this, std::placeholders::_1));
+	server.on("/submitsetting", HTTP_POST, std::bind(&WebServerHandler::handle_submit_setting, this, std::placeholders::_1));
+	server.on("/submitswitch", HTTP_POST, std::bind(&WebServerHandler::handle_submit_switch, this, std::placeholders::_1));
 	server.on("/reset", HTTP_POST, std::bind(&WebServerHandler::handle_reset, this, std::placeholders::_1));
 	server.on("/load_defaults", HTTP_POST, std::bind(&WebServerHandler::handle_load_defaults, this, std::placeholders::_1));
-	server.onNotFound(handle_NotFound);
+	server.onNotFound(handle_page_NotFound);
 }
 
-void WebServerHandler::handle_index(AsyncWebServerRequest *request)
+void WebServerHandler::handle_page_index(AsyncWebServerRequest *request)
 {
 	String name = "index";
 	String content = html_index;
@@ -40,7 +40,7 @@ void WebServerHandler::handle_index(AsyncWebServerRequest *request)
 	request->send(200, "text/html; charset=utf-8", content);
 }
 
-void WebServerHandler::handle_data(AsyncWebServerRequest *request)
+void WebServerHandler::handle_page_data(AsyncWebServerRequest *request)
 {
 	String header_data = "{\n";
 	header_data += "\"bme680/temperature\":\"{{temperature}}\",\n";
@@ -104,7 +104,7 @@ void WebServerHandler::handle_data(AsyncWebServerRequest *request)
 	request->send(200, "application/json; charset=utf-8", header_data);
 }
 
-void WebServerHandler::handle_wlan(AsyncWebServerRequest *request)
+void WebServerHandler::handle_page_wlan(AsyncWebServerRequest *request)
 {
 	String password;
 	String ssid;
@@ -128,7 +128,7 @@ void WebServerHandler::handle_wlan(AsyncWebServerRequest *request)
 	request->send(200, "text/html", layout);
 }
 
-void WebServerHandler::handle_status(AsyncWebServerRequest *request)
+void WebServerHandler::handle_page_status(AsyncWebServerRequest *request)
 {
 	String content = html_status;
 	String css = html_css;
@@ -361,7 +361,7 @@ void WebServerHandler::handle_status(AsyncWebServerRequest *request)
 	request->send(200, "text/html; charset=utf-8", layout);
 }
 
-void WebServerHandler::handle_setting(AsyncWebServerRequest *request)
+void WebServerHandler::handle_page_setting(AsyncWebServerRequest *request)
 {
 	String content = html_settings;
 	String css = html_css;
@@ -417,7 +417,7 @@ void WebServerHandler::handle_setting(AsyncWebServerRequest *request)
 	request->send(200, "text/html", layout);
 }
 
-void WebServerHandler::handle_credentials_submit(AsyncWebServerRequest *request)
+void WebServerHandler::handle_submit_credentials(AsyncWebServerRequest *request)
 {
 	preferences.begin("config", false); // Open preferences in read-write mode
 	preferences.putString("wlanSSID", request->getParam("wlanSSID", true)->value());
@@ -426,7 +426,7 @@ void WebServerHandler::handle_credentials_submit(AsyncWebServerRequest *request)
 	ESP.restart();
 }
 
-void WebServerHandler::handle_setting_submit(AsyncWebServerRequest *request)
+void WebServerHandler::handle_submit_setting(AsyncWebServerRequest *request)
 {
 	preferences.begin("config", false);
 
@@ -498,7 +498,7 @@ void WebServerHandler::handle_setting_submit(AsyncWebServerRequest *request)
 	request->redirect("/");
 }
 
-void WebServerHandler::handle_switch_submit(AsyncWebServerRequest *request)
+void WebServerHandler::handle_submit_switch(AsyncWebServerRequest *request)
 {
 	preferences.begin("config", false);
 
@@ -542,7 +542,7 @@ void WebServerHandler::handle_load_defaults(AsyncWebServerRequest *request)
 	ESP.restart();
 }
 
-void WebServerHandler::handle_NotFound(AsyncWebServerRequest *request)
+void WebServerHandler::handle_page_NotFound(AsyncWebServerRequest *request)
 {
 	request->send(404, "text/plain; charset=utf-8", "Not found");
 }
