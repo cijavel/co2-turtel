@@ -419,7 +419,7 @@ void WebServerHandler::handle_page_setting(AsyncWebServerRequest *request)
 
 void WebServerHandler::handle_submit_credentials(AsyncWebServerRequest *request)
 {
-	preferences.begin("config", false); // Open preferences in read-write mode
+	preferences.begin("config", false); 
 	preferences.putString("wlanSSID", request->getParam("wlanSSID", true)->value());
 	preferences.putString("wlanPASSWORD", request->getParam("wlanPASSWORD", true)->value());
 	preferences.end();

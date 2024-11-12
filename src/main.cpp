@@ -169,7 +169,7 @@ void loop() {
     DataCO2 mhz19Readout = mhz19Handler.getLastReadout();
 
     if (switchWiFi) {
-        WiFiHandler::checkWifi(currentSeconds);
+        WiFiHandler::checkWifiStatus(currentSeconds);
     } 
     
     WebServerHandler &webServer = WebServerHandler::getInstance();

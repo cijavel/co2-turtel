@@ -12,6 +12,7 @@ String ssid;
 void WiFiHandler::loadWiFiCredentials()
 {
 	preferences.begin("config", true); // Read-only mode
+
 	if (preferences.isKey("wlanSSID"))
 	{
 		ssid = preferences.getString("wlanSSID", WIFI_SSID);
@@ -20,6 +21,7 @@ void WiFiHandler::loadWiFiCredentials()
 	{
 		ssid = WIFI_SSID;
 	}
+
 	if (preferences.isKey("wlanPASSWORD"))
 	{
 		password = preferences.getString("wlanPASSWORD", WIFI_PW);
@@ -61,11 +63,12 @@ void WiFiHandler::initWifi()
 	loadWiFiCredentials();
 	WiFi.begin(ssid.c_str(), password.c_str());
 
-	while (WiFiClass::status() != WL_CONNECTED && wifiWaitCount < 20)
+	while (WiFiClass::status() != WL_CONNECTED && wifiWaitCount < 10)
 	{
 		delay(250);
 		wifiWaitCount++;
 	}
+
 	if (WiFiClass::status() == WL_CONNECTED)
 	{
 		Serial.print("[WIFI] IP address: ");
@@ -110,34 +113,28 @@ void WiFiHandler::ReStart()
 	}
 }
 
-bool WiFiHandler::StatusCheck()
-{
-	preferences.begin("config", true);
-	bool switchDebug = preferences.getBool("switchDEBUG", DEBUG);
-	preferences.end();
-
-	wl_status_t status = WiFiClass::status();
-	if (status != WL_CONNECTED)
-	{
-		ReStart();
-	}
-	else
-	{
-		if (switchDebug)
-		{
-			Serial.println("[WIFI] Still connected");
-			Serial.println();
-		}
-	}
-
-	return status == WL_CONNECTED;
-}
-
-bool WiFiHandler::checkWifi(unsigned long currentSeconds)
+bool WiFiHandler::checkWifiStatus(unsigned long currentSeconds)
 {
 	if (currentSeconds % interval_WiFiCheck_in_Seconds == 0)
 	{
-		return WiFiHandler::StatusCheck();
+		preferences.begin("config", true);
+		bool switchDebug = preferences.getBool("switchDEBUG", DEBUG);
+		preferences.end();
+
+		wl_status_t status = WiFiClass::status();
+		if (WiFiClass::status() != WL_CONNECTED)
+		{
+			ReStart();
+		}
+		else
+		{
+			if (switchDebug)
+			{
+				Serial.println("[WIFI] Still connected");
+				Serial.println();
+			}
+		}
+		return status == WL_CONNECTED;
 	}
-	return false;
+	return false;	
 }
